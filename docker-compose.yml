@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: app
+    restart: always
+    ports:
+      - 8001:8000
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
