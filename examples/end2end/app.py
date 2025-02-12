@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -18,7 +18,7 @@ def endpoint_1(param_1: int, param_2: str, param_3: float | None = None):
 
 
 @app.get("/endpoint_2/")
-def endpoint_1(param_1: int, param_2: str, param_3: float | None = None):
+def endpoint_2(param_1: int, param_2: str, param_3: float | None = None):
     ret_data = {"data": {"param_1": param_1, "param_2": param_2, "param_3": param_3}}
 
     print(ret_data)
@@ -42,5 +42,5 @@ def sub_endpoint_2(param_1: int, param_2: str, param_3: float | None = None):
 
 
 @app.post("/endpoint_3/")
-def endpoint_2(data: FooData):
+def endpoint_3(data: FooData):
     return data
