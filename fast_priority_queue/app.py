@@ -2,12 +2,13 @@ import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
-from time import sleep
+from typing import Any
 
 import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Response
 from redis import Redis
+from redis.exceptions import ConnectionError as RedisConnectionError
 from rq import Queue
 from rq.job import JobStatus
 
@@ -53,11 +54,11 @@ async def lifespan(app: FastAPI):
         logger.warning("No low priority endpoints defined.")
     else:
         if low_prio_paths:
-            logger.info(f"Low priority path")
+            logger.info("Low priority path")
             for path in low_prio_paths:
                 logger.info(f"    {path}")
         if low_prio_base_paths:
-            logger.info(f"Low priority base path")
+            logger.info("Low priority base path")
             for path in low_prio_base_paths:
                 logger.info(f"    {path}")
 
@@ -67,6 +68,36 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     lifespan=lifespan,
 )
+
+
+@app.get("/gateway_health/")
+async def heath_check() -> Any:
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.get(f"{target_base_url}")
+    except httpx.ConnectError:
+        target_reachable = False
+    else:
+        target_reachable = True
+
+    try:
+        redis_conn.info()
+    except RedisConnectionError:
+        redis_reachable = False
+    else:
+        redis_reachable = True
+
+    n_jobs_queued_low = None
+    n_jobs_queued_high = None
+    if redis_reachable:
+        n_jobs_queued_high = len(high_queue.jobs)
+        n_jobs_queued_low = len(low_queue.jobs)
+
+    return {
+        "target_reachable": target_reachable,
+        "redis_reachable": redis_reachable,
+        "queue": {"high": n_jobs_queued_high, "low": n_jobs_queued_low},
+    }
 
 
 async def forward_request(request: Request, path: str) -> Response:
@@ -108,7 +139,7 @@ async def forward_request(request: Request, path: str) -> Response:
 
 
 @app.api_route("/{path:path}", methods=["GET", "POST"])
-async def proxy_request(request: Request, path: str):
+async def proxy_request(request: Request, path: str) -> Any:
     response = await forward_request(request, path)
     return Response(
         content=response.content,
