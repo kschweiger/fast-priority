@@ -14,7 +14,6 @@ def generate_enpoint_list(raw_endpoint_str: str | None) -> list[str]:
 
 
 def run_request(method: str, url: str, headers: dict, content: dict):
-    time.sleep(4)
-    print(f"Got: {method=}, {url=}")
-    with httpx.Client(timeout=None) as client:
+    # print(f"Got: {method=}, {url=}")
+    with httpx.Client(timeout=None, follow_redirects=True) as client:
         return client.request(method=method, url=url, headers=headers, content=content)

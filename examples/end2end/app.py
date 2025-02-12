@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -7,6 +7,13 @@ app = FastAPI()
 class FooData(BaseModel):
     foo: str
     bar: int
+
+
+@app.get("/err_endpoint/")
+def get_err_endpoint(ret_code: int):
+    raise HTTPException(
+        status_code=ret_code, detail=f"Force {ret_code} error code from the api"
+    )
 
 
 @app.get("/endpoint_1/")

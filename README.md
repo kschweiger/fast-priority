@@ -33,7 +33,7 @@ Idea is to use this inside some kind of docker compose configuartion. Here is a 
 
 ```yml
 services:
-  befind_gateway_api:
+  behind_gateway_api:
     ...
   priorityity-gateway:
     image: fast_priority_queue:latest

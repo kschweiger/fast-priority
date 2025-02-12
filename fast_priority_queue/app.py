@@ -6,7 +6,7 @@ from time import sleep
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from redis import Redis
 from rq import Queue
 from rq.job import JobStatus
@@ -18,7 +18,7 @@ load_dotenv()
 app = FastAPI()
 
 logger = logging.getLogger("uvicorn.error")
-# logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 
 redis_conn = Redis(
     host=os.environ.get("FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST", "localhost"),
@@ -69,7 +69,7 @@ app = FastAPI(
 )
 
 
-async def forward_request(request: Request, path: str):
+async def forward_request(request: Request, path: str) -> Response:
     assert low_prio_paths is not None
     assert low_prio_base_paths is not None
     # Prepare request components
@@ -100,7 +100,7 @@ async def forward_request(request: Request, path: str):
         if status in [JobStatus.FAILED, JobStatus.STOPPED, JobStatus.CANCELED]:
             raise HTTPException(status_code=500, detail="Could not run request")
         logger.debug(
-            f"Waiting. Current status: %s of %s", job.get_status(refresh=True), job.id
+            "Waiting. Current status: %s of %s", job.get_status(refresh=True), job.id
         )
         await asyncio.sleep(job_poll_interval)
 
@@ -109,8 +109,9 @@ async def forward_request(request: Request, path: str):
 
 @app.api_route("/{path:path}", methods=["GET", "POST"])
 async def proxy_request(request: Request, path: str):
-    try:
-        response = await forward_request(request, path)
-        return response.json()
-    except httpx.ConnectError:
-        return {"error": "Target server unavailable"}
+    response = await forward_request(request, path)
+    return Response(
+        content=response.content,
+        status_code=response.status_code,
+        headers=dict(response.headers),
+    )
