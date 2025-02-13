@@ -16,7 +16,9 @@ services:
       - default
   priority-gateway-worker:
     image: fast_priority_queue:latest
-    command: uv run --no-dev --no-group test rq worker high low --url redis://queue
+    environment:
+      - FAST_PRIORITY_QUEUE_WORKERS=1
+      - FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=queue
     networks:
       - default
   queue:

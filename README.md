@@ -23,7 +23,7 @@ Build the container with the provided Dockerfile
 Then run it with something like this:
 
 ```bash
-docker run -p 8010:8000 -e FAST_PRIORITY_QUEUE_TARGET_BASE_URL=http://localhost:8011 -e FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=localhost fast_priority_queue:lates
+docker run -p 8010:8000 -e FAST_PRIORITY_QUEUE_TARGET_BASE_URL=http://localhost:8011 -e FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=localhost fast_priority_queue:latest
 ```
 
 
@@ -47,7 +47,9 @@ services:
       - default
   priority-gateway-worker:
     image: fast_priority_queue:latest
-    command: uv run rq worker high low --url redis://queue
+    environment:
+      - FAST_PRIORITY_QUEUE_WORKERS=1
+      - FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=queue
     networks:
       - default
   queue:
