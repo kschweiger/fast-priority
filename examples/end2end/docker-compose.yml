@@ -7,7 +7,7 @@ services:
     image: fast_priority_queue:latest
     environment:
       - FAST_PRIORITY_QUEUE_TARGET_BASE_URL=http://behind_gateway_api:8000
-      - FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=queue
+      - FAST_PRIORITY_QUEUE_REDIS_HOST=queue
       - FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS=endpoint_2/
       - FAST_PRIORITY_QUEUE_LOW_PRIO_BASE_PATHS=sub_category/
     ports:
@@ -18,7 +18,7 @@ services:
     image: fast_priority_queue:latest
     environment:
       - FAST_PRIORITY_QUEUE_WORKERS=1
-      - FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST=queue
+      - FAST_PRIORITY_QUEUE_REDIS_HOST=queue
     networks:
       - default
   queue:
