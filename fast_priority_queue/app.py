@@ -22,10 +22,10 @@ logger = logging.getLogger("uvicorn.error")
 logger.setLevel(logging.DEBUG)
 
 redis_conn = Redis(
-    host=os.environ.get("FAST_PRIORITY_QUEUE_TARGET_REDIS_HOST", "localhost"),
-    port=int(os.environ.get("FAST_PRIORITY_QUEUE_TARGET_REDIS_PORT", 6379)),
-    username=os.environ.get("FAST_PRIORITY_QUEUE_TARGET_REDIS_USER", None),
-    password=os.environ.get("FAST_PRIORITY_QUEUE_TARGET_REDIS_PASSWORD", None),
+    host=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_HOST", "localhost"),
+    port=int(os.environ.get("FAST_PRIORITY_QUEUE_REDIS_PORT", 6379)),
+    username=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_USER", None),
+    password=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_PASSWORD", None),
 )
 low_queue = Queue("low", connection=redis_conn)
 high_queue = Queue("high", connection=redis_conn)
