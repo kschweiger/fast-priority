@@ -9,6 +9,11 @@ class FooData(BaseModel):
     bar: int
 
 
+@app.get("/health/")
+def get_health():
+    return {"status": "good"}
+
+
 @app.get("/err_endpoint/")
 def get_err_endpoint(ret_code: int):
     raise HTTPException(

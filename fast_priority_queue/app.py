@@ -19,7 +19,7 @@ load_dotenv()
 app = FastAPI()
 
 logger = logging.getLogger("uvicorn.error")
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(logging.DEBUG)
 
 redis_conn = Redis(
     host=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_HOST", "localhost"),
@@ -36,12 +36,19 @@ job_ttl = int(os.environ.get("FAST_PRIORITY_QUEUE_TTL", 60 * 5))
 
 low_prio_paths = None
 low_prio_base_paths = None
+pass_through_paths = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global low_prio_paths
     global low_prio_base_paths
+    global pass_through_paths
+
+    pass_through_paths = ["health/"]
+    pass_through_env = os.environ.get("FAST_PRIORITY_QUEUE_PASS_THROUGH", None)
+    if pass_through_env:
+        pass_through_paths = generate_enpoint_list(pass_through_env)
 
     low_prio_paths = generate_enpoint_list(
         os.environ.get("FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS", None)
@@ -62,6 +69,10 @@ async def lifespan(app: FastAPI):
             for path in low_prio_base_paths:
                 logger.info(f"    {path}")
 
+    if pass_through_paths:
+        logger.info("Pass through paths")
+        for path in pass_through_paths:
+            logger.info(f"    {path}")
     yield
 
 
@@ -109,6 +120,16 @@ async def forward_request(request: Request, path: str) -> Response:
     headers.pop("host", None)  # Remove original host header
 
     request_body = await request.body()
+
+    if pass_through_paths and path in pass_through_paths:
+        logger.debug("%s in pass through. Skipping queue", path)
+        async with httpx.AsyncClient(timeout=None, follow_redirects=True) as client:
+            return await client.request(  # type: ignore
+                method=request.method,
+                url=f"{target_base_url}{url}",
+                headers=headers,
+                content=request_body,
+            )
 
     use_queue = high_queue
     if path in low_prio_paths or any(path.startswith(b) for b in low_prio_base_paths):

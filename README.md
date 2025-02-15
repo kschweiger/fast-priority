@@ -1,4 +1,4 @@
-#🚀 Fast Priority Queue 🔥
+# 🚀 Fast Priority Queue 🔥
 
 A minimal priority queuing gateway built with FastAPI using Redis.
 
@@ -23,6 +23,7 @@ Both the gateway and workers are fully configurable via the following environmen
 | FAST_PRIORITY_QUEUE_TARGET_BASE_URL       | Base url of the target REST api which should run behind the gateway                                                                   | x        |           |
 | FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS        | Comma separated list of paths on the target API that should have low priority. Low priority for exact matches                         |          | None      |
 | FAST_PRIORITY_QUEUE_LOW_PRIO_BASE_PATHS   | Comma separated list of paths on the target API that should have low priority. Low priority if a request paths starts with the value. |          | None      |
+| FAST_PRIORITY_QUEUE_PASS_THROUGH          | Comma separated list of paths on the target API that should skip the queue. Request will be directly be passed on.                    |          | health/   |
 | FAST_PRIORITY_QUEUE_POLL_INTERVAL         | How often should each request check if the job is finished                                                                            |          | 1.0       |
 | FAST_PRIORITY_QUEUE_TTL                   | Time-to-live (in seconds) for jobs on the queues.	                                                                                    |          | 300       |
 | FAST_PRIORITY_QUEUE_REDIS_HOST            | Redis host                                                                                                                            |          | localhost |
