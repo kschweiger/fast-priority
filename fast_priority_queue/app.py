@@ -165,5 +165,5 @@ async def proxy_request(request: Request, path: str) -> Any:
     return Response(
         content=response.content,
         status_code=response.status_code,
-        headers=dict(response.headers),
+        headers=response.headers,
     )

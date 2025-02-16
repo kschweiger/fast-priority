@@ -39,6 +39,10 @@ dev = [
 import-transactions-csv = "portfolio.cli.importer:import_csv"
 run-portfolio-setup = "portfolio.cli.setup:run_setup"
 symbol-update-runner = "portfolio.cli.update_runner:runner"
+
+[tool.pytest.ini_options]
+testpaths = ["tests/unit/"]
+
 [tool.ruff]
 line-length = 88
 target-version = "py312"
