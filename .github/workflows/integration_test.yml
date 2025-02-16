@@ -23,7 +23,11 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras
       - name: Start Gateway
-        run: uv run fastapi dev fast_priority_queue/app.py --host 0.0.0.0 --port 8001 &
+        run: |
+          export FAST_PRIORITY_QUEUE_TARGET_BASE_URL="http://localhost:8010"
+          export FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS="endpoint_2/" 
+          export FAST_PRIORITY_QUEUE_LOW_PRIO_BASE_PATHS="sub_category/"
+          uv run fastapi dev fast_priority_queue/app.py --host 0.0.0.0 --port 8001 &
       - name: Start API
         run: uv run fastapi dev examples/end2end/app.py --host 0.0.0.0 --port 8010 &
       - name: Start worker
