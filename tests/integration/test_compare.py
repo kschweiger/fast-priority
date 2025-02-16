@@ -11,6 +11,8 @@ PORT_API = os.environ.get("INTEGRATION_TEST_PORT_API", 8010)
     "path_and_params",
     [
         "endpoint_1?param_1=1&param_2=abc",
+        "endpoint_2?param_1=1&param_2=abc",
+        "sub_category/endpoint_1?param_1=1&param_2=abc",
         "err_endpoint/?ret_code=500",
         "err_endpoint/?ret_code=404",
     ],
