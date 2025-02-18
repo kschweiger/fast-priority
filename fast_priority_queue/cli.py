@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 import os
-import subprocess
 import sys
 from urllib.parse import quote
 
-import click
 import uvicorn
 
 

@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 from contextlib import asynccontextmanager
+from enum import StrEnum
 from typing import Any
 
 import httpx
@@ -15,6 +16,12 @@ from rq.job import JobStatus
 from fast_priority_queue.utils import generate_enpoint_list, run_request
 
 load_dotenv()
+
+
+class HighPrioPaths(StrEnum):
+    LISTED = "listed"
+    UNLISTED = "unlisted"
+
 
 app = FastAPI()
 
@@ -31,18 +38,21 @@ low_queue = Queue("low", connection=redis_conn)
 high_queue = Queue("high", connection=redis_conn)
 
 target_base_url = os.environ["FAST_PRIORITY_QUEUE_TARGET_BASE_URL"]
+priority_mode = HighPrioPaths(
+    os.environ.get("FAST_PRIORITY_QUEUE_HIGH_PRIO_PATHS", "unlisted")
+)
 job_poll_interval = float(os.environ.get("FAST_PRIORITY_QUEUE_POLL_INTERVAL", 1.0))
 job_ttl = int(os.environ.get("FAST_PRIORITY_QUEUE_TTL", 60 * 5))
 
-low_prio_paths = None
-low_prio_base_paths = None
+prio_paths = None
+prio_base_paths = None
 pass_through_paths = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global low_prio_paths
-    global low_prio_base_paths
+    global prio_paths
+    global prio_base_paths
     global pass_through_paths
 
     pass_through_paths = ["health/"]
@@ -50,23 +60,27 @@ async def lifespan(app: FastAPI):
     if pass_through_env:
         pass_through_paths = generate_enpoint_list(pass_through_env)
 
-    low_prio_paths = generate_enpoint_list(
-        os.environ.get("FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS", None)
+    prio_paths = generate_enpoint_list(
+        os.environ.get("FAST_PRIORITY_QUEUE_PRIO_PATHS", None)
     )
-    low_prio_base_paths = generate_enpoint_list(
-        os.environ.get("FAST_PRIORITY_QUEUE_LOW_PRIO_BASE_PATHS", None)
+    prio_base_paths = generate_enpoint_list(
+        os.environ.get("FAST_PRIORITY_QUEUE_PRIO_BASE_PATHS", None)
     )
 
-    if not low_prio_base_paths and not low_prio_paths:
+    if not prio_base_paths and not prio_paths:
         logger.warning("No low priority endpoints defined.")
     else:
-        if low_prio_paths:
+        if priority_mode == HighPrioPaths.LISTED:
+            logger.info("The following path will be passed to the **HIGH** queue")
+        else:
+            logger.info("The following path will be passed to the **LOW** queue")
+        if prio_paths:
             logger.info("Low priority path")
-            for path in low_prio_paths:
+            for path in prio_paths:
                 logger.info(f"    {path}")
-        if low_prio_base_paths:
+        if prio_base_paths:
             logger.info("Low priority base path")
-            for path in low_prio_base_paths:
+            for path in prio_base_paths:
                 logger.info(f"    {path}")
 
     if pass_through_paths:
@@ -112,8 +126,8 @@ async def heath_check() -> Any:
 
 
 async def forward_request(request: Request, path: str) -> Response:
-    assert low_prio_paths is not None
-    assert low_prio_base_paths is not None
+    assert prio_paths is not None
+    assert prio_base_paths is not None
     # Prepare request components
     url = f"/{path}?{request.url.query}"
     headers = dict(request.headers)
@@ -131,9 +145,9 @@ async def forward_request(request: Request, path: str) -> Response:
                 content=request_body,
             )
 
-    use_queue = high_queue
-    if path in low_prio_paths or any(path.startswith(b) for b in low_prio_base_paths):
-        use_queue = low_queue
+    use_queue = high_queue if priority_mode == HighPrioPaths.UNLISTED else low_queue
+    if path in prio_paths or any(path.startswith(b) for b in prio_base_paths):
+        use_queue = low_queue if priority_mode == HighPrioPaths.UNLISTED else high_queue
 
     job = use_queue.enqueue(
         run_request,

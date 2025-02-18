@@ -18,18 +18,19 @@ Both the gateway and workers are fully configurable via the following environmen
 
 ### Gateway
 
-| ENV                                       | Description                                                                                                                           | Required | Default   |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|----------|-----------|
-| FAST_PRIORITY_QUEUE_TARGET_BASE_URL       | Base url of the target REST api which should run behind the gateway                                                                   | x        |           |
-| FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS        | Comma separated list of paths on the target API that should have low priority. Low priority for exact matches                         |          | None      |
-| FAST_PRIORITY_QUEUE_LOW_PRIO_BASE_PATHS   | Comma separated list of paths on the target API that should have low priority. Low priority if a request paths starts with the value. |          | None      |
-| FAST_PRIORITY_QUEUE_PASS_THROUGH          | Comma separated list of paths on the target API that should skip the queue. Request will be directly be passed on.                    |          | health/   |
-| FAST_PRIORITY_QUEUE_POLL_INTERVAL         | How often should each request check if the job is finished                                                                            |          | 1.0       |
-| FAST_PRIORITY_QUEUE_TTL                   | Time-to-live (in seconds) for jobs on the queues.	                                                                                    |          | 300       |
-| FAST_PRIORITY_QUEUE_REDIS_HOST            | Redis host                                                                                                                            |          | localhost |
-| FAST_PRIORITY_QUEUE_REDIS_PORT            | Redis port                                                                                                                            |          | 6379      |
-| FAST_PRIORITY_QUEUE_REDIS_USER            | Redis username                                                                                                                        |          | None      |
-| FAST_PRIORITY_QUEUE_REDIS_PASSWORD        | Redis password                                                                                                                        |          | None      |
+| ENV                                       | Description                                                                                                                                | Required | Default   |
+|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------|
+| FAST_PRIORITY_QUEUE_TARGET_BASE_URL       | Base url of the target REST api which should run behind the gateway                                                                        | x        |           |
+| FAST_PRIORITY_QUEUE_HIGH_PRIO_PATHS       | Switch between **listed** and **unlisted** modes. If **listed** (**unlisted**) the paths defined in the _PATH_ env variables are put on the **high** (**low**) queue |          | unlisted  |
+| FAST_PRIORITY_QUEUE_PRIO_PATHS            | Comma separated list of paths on the target API that should have low priority. Low priority for exact matches                              |          | None      |
+| FAST_PRIORITY_QUEUE_PRIO_BASE_PATHS       | Comma separated list of paths on the target API that should have low priority. Low priority if a request paths starts with the value.      |          | None      |
+| FAST_PRIORITY_QUEUE_PASS_THROUGH          | Comma separated list of paths on the target API that should skip the queue. Request will be directly be passed on.                         |          | health/   |
+| FAST_PRIORITY_QUEUE_POLL_INTERVAL         | How often should each request check if the job is finished                                                                                 |          | 1.0       |
+| FAST_PRIORITY_QUEUE_TTL                   | Time-to-live (in seconds) for jobs on the queues.	                                                                                         |          | 300       |
+| FAST_PRIORITY_QUEUE_REDIS_HOST            | Redis host                                                                                                                                 |          | localhost |
+| FAST_PRIORITY_QUEUE_REDIS_PORT            | Redis port                                                                                                                                 |          | 6379      |
+| FAST_PRIORITY_QUEUE_REDIS_USER            | Redis username                                                                                                                             |          | None      |
+| FAST_PRIORITY_QUEUE_REDIS_PASSWORD        | Redis password                                                                                                                             |          | None      |
 
 ### Queue worker (docker)
 
@@ -43,13 +44,13 @@ Both the gateway and workers are fully configurable via the following environmen
 
 ## Usage
 
-Fast Priority Queue is designed to run via Docker (or Docker Compose), but you can also run the components individually during development. 
+Fast Priority Queue is designed to run via Docker (or Docker Compose), but you can also run the components individually during development.
 
 For example:
 
 ```bash
 fastapi run fast_priority_queue/app.py --host 0.0.0.0 --port 8001
-rq worker high low 
+rq worker high low
 ```
 
 ### Docker 🐳
@@ -61,7 +62,7 @@ You can build the Docker container using the provided Dockerfile. The container 
 
 
 
-#### Examples 
+#### Examples
 
 
 ```bash
@@ -86,10 +87,10 @@ services:
     environment:
       - FAST_PRIORITY_QUEUE_TARGET_BASE_URL=http://behind_gateway_api:8000
       - FAST_PRIORITY_QUEUE_REDIS_HOST=queue
-      - FAST_PRIORITY_QUEUE_LOW_PRIO_PATHS=endpoint_1,endpoint_2
+      - FAST_PRIORITY_QUEUE_PRIO_PATHS=endpoint_1,endpoint_2
     ports:
       - 8066:8000
-      
+
   priority-gateway-worker:
     image: fast_priority_queue:latest
     environment:
