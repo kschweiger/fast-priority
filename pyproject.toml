@@ -9,14 +9,16 @@ description = "Simple and streigt forward priority queing gateway using fastapi"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-  "fastapi[standard]",
-  "celery",
+  "fastapi[standard]>=0.115.8",
   "httpx",
-  "click",
-  "tqdm",
   "python-dotenv>=1.0.1",
   "rq>=2.1.0",
+  "click",
+  "uvicorn>=0.34.0"
 ]
+
+[project.scripts]
+run-fast-priority-queue = "fast_priority_queue.cli:main"
 
 [tool.uv]
 default-groups = ["dev", "test"]
@@ -34,11 +36,6 @@ dev = [
   "bpython",
   "debugpy"
 ]
-
-[project.scripts]
-import-transactions-csv = "portfolio.cli.importer:import_csv"
-run-portfolio-setup = "portfolio.cli.setup:run_setup"
-symbol-update-runner = "portfolio.cli.update_runner:runner"
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit/"]
