@@ -10,7 +10,7 @@ docker run --name some-redis -d redis
 
 Create a `.env` file in the project root and defined (at least) the target url
 ```
-FAST_PRIORITY_QUEUE_TARGET_BASE_URL="http://localhost:8010"
+FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8010"
 ```
 
 In different terminal sessions run

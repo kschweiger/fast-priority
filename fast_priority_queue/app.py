@@ -29,20 +29,20 @@ logger = logging.getLogger("uvicorn.error")
 # logger.setLevel(logging.DEBUG)
 
 redis_conn = Redis(
-    host=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_HOST", "localhost"),
-    port=int(os.environ.get("FAST_PRIORITY_QUEUE_REDIS_PORT", 6379)),
-    username=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_USER", None),
-    password=os.environ.get("FAST_PRIORITY_QUEUE_REDIS_PASSWORD", None),
+    host=os.environ.get("FAST_PRIORITY_REDIS_HOST", "localhost"),
+    port=int(os.environ.get("FAST_PRIORITY_REDIS_PORT", 6379)),
+    username=os.environ.get("FAST_PRIORITY_REDIS_USER", None),
+    password=os.environ.get("FAST_PRIORITY_REDIS_PASSWORD", None),
 )
 low_queue = Queue("low", connection=redis_conn)
 high_queue = Queue("high", connection=redis_conn)
 
-target_base_url = os.environ["FAST_PRIORITY_QUEUE_TARGET_BASE_URL"]
+target_base_url = os.environ["FAST_PRIORITY_TARGET_BASE_URL"]
 priority_mode = HighPrioPaths(
-    os.environ.get("FAST_PRIORITY_QUEUE_HIGH_PRIO_PATHS", "unlisted")
+    os.environ.get("FAST_PRIORITY_HIGH_PRIO_PATHS", "unlisted")
 )
-job_poll_interval = float(os.environ.get("FAST_PRIORITY_QUEUE_POLL_INTERVAL", 1.0))
-job_ttl = int(os.environ.get("FAST_PRIORITY_QUEUE_TTL", 60 * 5))
+job_poll_interval = float(os.environ.get("FAST_PRIORITY_POLL_INTERVAL", 1.0))
+job_ttl = int(os.environ.get("FAST_PRIORITY_TTL", 60 * 5))
 
 prio_paths = None
 prio_base_paths = None
@@ -56,15 +56,15 @@ async def lifespan(app: FastAPI):
     global pass_through_paths
 
     pass_through_paths = ["health/"]
-    pass_through_env = os.environ.get("FAST_PRIORITY_QUEUE_PASS_THROUGH", None)
+    pass_through_env = os.environ.get("FAST_PRIORITY_PASS_THROUGH", None)
     if pass_through_env:
         pass_through_paths = generate_enpoint_list(pass_through_env)
 
     prio_paths = generate_enpoint_list(
-        os.environ.get("FAST_PRIORITY_QUEUE_PRIO_PATHS", None)
+        os.environ.get("FAST_PRIORITY_PRIO_PATHS", None)
     )
     prio_base_paths = generate_enpoint_list(
-        os.environ.get("FAST_PRIORITY_QUEUE_PRIO_BASE_PATHS", None)
+        os.environ.get("FAST_PRIORITY_PRIO_BASE_PATHS", None)
     )
 
     if not prio_base_paths and not prio_paths:

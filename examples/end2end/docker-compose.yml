@@ -6,10 +6,10 @@ services:
   priorityity-gateway:
     image: fast_priority_queue:latest
     environment:
-      - FAST_PRIORITY_QUEUE_TARGET_BASE_URL=http://behind_gateway_api:8000
-      - FAST_PRIORITY_QUEUE_REDIS_HOST=queue
-      - FAST_PRIORITY_QUEUE_PRIO_PATHS=endpoint_2/
-      - FAST_PRIORITY_QUEUE_PRIO_BASE_PATHS=sub_category/
+      - FAST_PRIORITY_TARGET_BASE_URL=http://behind_gateway_api:8000
+      - FAST_PRIORITY_REDIS_HOST=queue
+      - FAST_PRIORITY_PRIO_PATHS=endpoint_2/
+      - FAST_PRIORITY_PRIO_BASE_PATHS=sub_category/
     ports:
       - 8066:8000
     networks:
@@ -17,8 +17,8 @@ services:
   priority-gateway-worker:
     image: fast_priority_queue:latest
     environment:
-      - FAST_PRIORITY_QUEUE_WORKERS=1
-      - FAST_PRIORITY_QUEUE_REDIS_HOST=queue
+      - FAST_PRIORITY_WORKERS=1
+      - FAST_PRIORITY_REDIS_HOST=queue
     networks:
       - default
   queue:

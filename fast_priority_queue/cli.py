@@ -12,7 +12,7 @@ def urlencode(s: str) -> str:
 
 
 def main():
-    role = "worker" if os.getenv("FAST_PRIORITY_QUEUE_WORKERS") else "api"
+    role = "worker" if os.getenv("FAST_PRIORITY_WORKERS") else "api"
 
     print("======================================")
     print("==> Fast Priority Queue RUN SCRIPT <==")
@@ -25,8 +25,8 @@ def main():
 
         uvicorn.run(
             app,
-            host=os.getenv("FAST_PRIORITY_QUEUE_HOST", "0.0.0.0"),
-            port=int(os.getenv("FAST_PRIORITY_QUEUE_PORT", 8000)),
+            host=os.getenv("FAST_PRIORITY_HOST", "0.0.0.0"),
+            port=int(os.getenv("FAST_PRIORITY_PORT", 8000)),
             # log_level="debug",
             reload=False,  # Disabled for production
         )
@@ -34,13 +34,13 @@ def main():
         from rq.cli.cli import main as rq_cli
 
         print("Running queue worker")
-        workers = os.getenv("FAST_PRIORITY_QUEUE_WORKERS", "1")
+        workers = os.getenv("FAST_PRIORITY_WORKERS", "1")
         print(f"Using {workers} workers")
 
-        redis_host = os.getenv("FAST_PRIORITY_QUEUE_REDIS_HOST", "localhost")
-        redis_user = os.getenv("FAST_PRIORITY_QUEUE_REDIS_USER", "")
-        redis_password = os.getenv("FAST_PRIORITY_QUEUE_REDIS_PASSWORD", "")
-        redis_port = os.getenv("FAST_PRIORITY_QUEUE_REDIS_PORT", "")
+        redis_host = os.getenv("FAST_PRIORITY_REDIS_HOST", "localhost")
+        redis_user = os.getenv("FAST_PRIORITY_REDIS_USER", "")
+        redis_password = os.getenv("FAST_PRIORITY_REDIS_PASSWORD", "")
+        redis_port = os.getenv("FAST_PRIORITY_REDIS_PORT", "")
 
         auth = ""
         if redis_user and redis_password:
