@@ -1,6 +1,6 @@
 import pytest
 
-from fast_priority_queue.utils import generate_enpoint_list
+from fast_priority.utils import generate_enpoint_list
 
 
 @pytest.mark.parametrize(

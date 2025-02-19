@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "fast_priority_queue"
+name = "fast_priority"
 version = "0.0.1"
 description = "Simple and streigt forward priority queing gateway using fastapi"
 readme = "README.md"
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-run-fast-priority-queue = "fast_priority_queue.cli:main"
+run-fast-priority-queue = "fast_priority.cli:main"
 
 [tool.uv]
 default-groups = ["dev", "test"]

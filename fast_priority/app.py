@@ -13,7 +13,7 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 from rq import Queue
 from rq.job import JobStatus
 
-from fast_priority_queue.utils import generate_enpoint_list, run_request
+from fast_priority.utils import generate_enpoint_list, run_request
 
 load_dotenv()
 
@@ -60,9 +60,7 @@ async def lifespan(app: FastAPI):
     if pass_through_env:
         pass_through_paths = generate_enpoint_list(pass_through_env)
 
-    prio_paths = generate_enpoint_list(
-        os.environ.get("FAST_PRIORITY_PRIO_PATHS", None)
-    )
+    prio_paths = generate_enpoint_list(os.environ.get("FAST_PRIORITY_PRIO_PATHS", None))
     prio_base_paths = generate_enpoint_list(
         os.environ.get("FAST_PRIORITY_PRIO_BASE_PATHS", None)
     )

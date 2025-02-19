@@ -21,7 +21,7 @@ def main():
     print("======================================")
 
     if role == "api":
-        from fast_priority_queue.app import app
+        from fast_priority.app import app
 
         uvicorn.run(
             app,

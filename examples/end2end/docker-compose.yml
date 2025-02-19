@@ -4,7 +4,7 @@ services:
     networks:
       - default
   priorityity-gateway:
-    image: fast_priority_queue:latest
+    image: fast_priority:latest
     environment:
       - FAST_PRIORITY_TARGET_BASE_URL=http://behind_gateway_api:8000
       - FAST_PRIORITY_REDIS_HOST=queue
@@ -15,7 +15,7 @@ services:
     networks:
       - default
   priority-gateway-worker:
-    image: fast_priority_queue:latest
+    image: fast_priority:latest
     environment:
       - FAST_PRIORITY_WORKERS=1
       - FAST_PRIORITY_REDIS_HOST=queue

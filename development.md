@@ -20,7 +20,7 @@ uv run fastapi dev examples/end2end/app.py --host 0.0.0.0 --port 8010
 ```
 
 ```bash
-uv run fastapi dev fast_priority_queue/app.py --host 0.0.0.0 --port 8001
+uv run fastapi dev fast_priority/app.py --host 0.0.0.0 --port 8001
 ```
 
 Now send curl requests to `localhost:8001` to test the gateway

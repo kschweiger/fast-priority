@@ -49,7 +49,7 @@ Fast Priority Queue is designed to run via Docker (or Docker Compose), but you c
 For example:
 
 ```bash
-fastapi run fast_priority_queue/app.py --host 0.0.0.0 --port 8001
+fastapi run fast_priority/app.py --host 0.0.0.0 --port 8001
 rq worker high low
 ```
 
@@ -67,10 +67,10 @@ You can build the Docker container using the provided Dockerfile. The container 
 
 ```bash
 # API
-docker run -p 8010:8000 -e FAST_PRIORITY_TARGET_BASE_URL=http://localhost:8011 -e FAST_PRIORITY_REDIS_HOST=localhost fast_priority_queue:latest
+docker run -p 8010:8000 -e FAST_PRIORITY_TARGET_BASE_URL=http://localhost:8011 -e FAST_PRIORITY_REDIS_HOST=localhost fast_priority:latest
 
 # Workers
-docker run -p 8010:8000 -e  FAST_PRIORITY_WORKER=1 -e FAST_PRIORITY_REDIS_HOST=localhost fast_priority_queue:latest
+docker run -p 8010:8000 -e  FAST_PRIORITY_WORKER=1 -e FAST_PRIORITY_REDIS_HOST=localhost fast_priority:latest
 ```
 
 
@@ -83,7 +83,7 @@ services:
   behind_gateway_api:
     ...
   priorityity-gateway:
-    image: fast_priority_queue:latest
+    image: fast_priority:latest
     environment:
       - FAST_PRIORITY_TARGET_BASE_URL=http://behind_gateway_api:8000
       - FAST_PRIORITY_REDIS_HOST=queue
@@ -92,7 +92,7 @@ services:
       - 8066:8000
 
   priority-gateway-worker:
-    image: fast_priority_queue:latest
+    image: fast_priority:latest
     environment:
       - FAST_PRIORITY_WORKERS=1
       - FAST_PRIORITY_REDIS_HOST=queue
