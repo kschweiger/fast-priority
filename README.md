@@ -34,9 +34,9 @@ Both the gateway and workers are fully configurable via the following environmen
 
 ### Queue worker (docker)
 
-| ENV                                       | Description                                                                                                                           | Required | Default   |
-|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|----------|-----------|
-| FAST_PRIORITY_WORKER                | Set (e.g., non-empty or a number) to run as a worker instead of the gateway. Controls the number of worker processes to launch.       | x        |           |
+| ENV                                 | Description                                                                                                                           | Required | Default   |
+|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|----------|-----------|
+| FAST_PRIORITY_WORKERS               | Set (e.g., non-empty or a number) to run as a worker instead of the gateway. Controls the number of worker processes to launch.       | x        |           |
 | FAST_PRIORITY_REDIS_HOST            | Redis host                                                                                                                            |          | localhost |
 | FAST_PRIORITY_REDIS_PORT            | Redis port                                                                                                                            |          | 6379      |
 | FAST_PRIORITY_REDIS_USER            | Redis username                                                                                                                        |          | None      |
