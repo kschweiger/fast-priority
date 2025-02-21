@@ -43,6 +43,7 @@ job_poll_interval = float(os.environ.get("FAST_PRIORITY_POLL_INTERVAL", 1.0))
 job_ttl = int(os.environ.get("FAST_PRIORITY_TTL", 60 * 5))
 
 doc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_docs")
+redoc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_redoc")
 health_path = os.environ.get("FAST_PRIORITY_HEALTH_PATH", "/gateway_health")
 
 prio_paths = None
@@ -92,7 +93,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     lifespan=lifespan,
     docs_url=doc_path,
-    redoc_url=None,
+    redoc_url=redoc_path,
 )
 
 
@@ -126,13 +127,15 @@ async def heath_check() -> Any:
     }
 
 
-@app.get("/docs")
-async def get_target_docs() -> Any:
+@app.get("/docs", include_in_schema=False)
+@app.get("/redoc", include_in_schema=False)
+async def get_target_docs(request: Request) -> Any:
+    current_path = request.url.path
+    print(current_path)
     async with httpx.AsyncClient(timeout=None, follow_redirects=True) as client:
         response = await client.get(  # type: ignore
-            url=f"{target_base_url}/docs",
+            url=f"{target_base_url}{current_path}",
         )
-    # print(response.content)
     new_content = response.content.decode("utf-8").replace(
         "/openapi.json", "/target_openapi.json"
     )
@@ -147,7 +150,7 @@ async def get_target_docs() -> Any:
 
 
 @app.get("/target_openapi.json")
-async def get_target_openapi_spec():
+async def get_target_openapi_spec() -> Any:
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{target_base_url}/openapi.json")
     return Response(
@@ -205,7 +208,7 @@ async def forward_request(request: Request, path: str) -> Response:
     return job.result
 
 
-@app.api_route("/{path:path}", methods=["GET", "POST"])
+@app.api_route("/{path:path}", methods=["GET", "POST"], include_in_schema=False)
 async def proxy_request(request: Request, path: str) -> Any:
     response = await forward_request(request, path)
     print(response)
