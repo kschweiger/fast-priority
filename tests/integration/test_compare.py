@@ -57,3 +57,36 @@ def test_post_valid(data: dict, exp_status: int) -> None:
     assert response_direct.status_code == response_gateway.status_code
     assert response_direct.content == response_gateway.content
     assert response_direct.headers.keys() == response_gateway.headers.keys()
+
+
+def test_docs() -> None:
+    response_direct = httpx.get(
+        f"http://localhost:{PORT_API}/docs",
+        follow_redirects=True,
+    )
+    response_gateway = httpx.get(
+        f"http://localhost:{PORT_GATEWAY}/docs",
+        follow_redirects=True,
+    )
+    content_direct = response_direct.content.decode("utf-8")
+    content_gateway = response_gateway.content.decode("utf-8")
+    assert content_direct != content_gateway
+
+    _content_gateway = content_gateway.replace("/target_openapi.json", "/openapi.json")
+
+    assert content_direct == _content_gateway
+
+
+def test_opneapi_json() -> None:
+    response_direct = httpx.get(
+        f"http://localhost:{PORT_API}/openapi.json",
+        follow_redirects=True,
+    )
+    response_gateway = httpx.get(
+        f"http://localhost:{PORT_GATEWAY}/target_openapi.json",
+        follow_redirects=True,
+    )
+
+    content_direct = response_direct.content.decode("utf-8")
+    content_gateway = response_gateway.content.decode("utf-8")
+    assert content_direct == content_gateway

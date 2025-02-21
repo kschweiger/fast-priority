@@ -23,8 +23,6 @@ class HighPrioPaths(StrEnum):
     UNLISTED = "unlisted"
 
 
-app = FastAPI()
-
 logger = logging.getLogger("uvicorn.error")
 # logger.setLevel(logging.DEBUG)
 
@@ -44,6 +42,9 @@ priority_mode = HighPrioPaths(
 job_poll_interval = float(os.environ.get("FAST_PRIORITY_POLL_INTERVAL", 1.0))
 job_ttl = int(os.environ.get("FAST_PRIORITY_TTL", 60 * 5))
 
+doc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_docs")
+health_path = os.environ.get("FAST_PRIORITY_HEALTH_PATH", "/gateway_health")
+
 prio_paths = None
 prio_base_paths = None
 pass_through_paths = None
@@ -55,7 +56,7 @@ async def lifespan(app: FastAPI):
     global prio_base_paths
     global pass_through_paths
 
-    pass_through_paths = ["health/"]
+    pass_through_paths = ["health"]
     pass_through_env = os.environ.get("FAST_PRIORITY_PASS_THROUGH", None)
     if pass_through_env:
         pass_through_paths = generate_enpoint_list(pass_through_env)
@@ -90,10 +91,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
+    docs_url=doc_path,
+    redoc_url=None,
 )
 
 
-@app.get("/gateway_health/")
+@app.get(health_path)
 async def heath_check() -> Any:
     try:
         async with httpx.AsyncClient() as client:
@@ -121,6 +124,37 @@ async def heath_check() -> Any:
         "redis_reachable": redis_reachable,
         "queue": {"high": n_jobs_queued_high, "low": n_jobs_queued_low},
     }
+
+
+@app.get("/docs")
+async def get_target_docs() -> Any:
+    async with httpx.AsyncClient(timeout=None, follow_redirects=True) as client:
+        response = await client.get(  # type: ignore
+            url=f"{target_base_url}/docs",
+        )
+    # print(response.content)
+    new_content = response.content.decode("utf-8").replace(
+        "/openapi.json", "/target_openapi.json"
+    )
+    new_bytes = new_content.encode("utf-8")
+    new_headers = dict(response.headers)
+    new_headers["content-length"] = str(len(new_bytes))
+    return Response(
+        content=new_bytes,
+        status_code=response.status_code,
+        headers=new_headers,
+    )
+
+
+@app.get("/target_openapi.json")
+async def get_target_openapi_spec():
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{target_base_url}/openapi.json")
+    return Response(
+        content=response.content,
+        status_code=response.status_code,
+        headers=dict(response.headers),
+    )
 
 
 async def forward_request(request: Request, path: str) -> Response:
@@ -174,6 +208,7 @@ async def forward_request(request: Request, path: str) -> Response:
 @app.api_route("/{path:path}", methods=["GET", "POST"])
 async def proxy_request(request: Request, path: str) -> Any:
     response = await forward_request(request, path)
+    print(response)
     return Response(
         content=response.content,
         status_code=response.status_code,
