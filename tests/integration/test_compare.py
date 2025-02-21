@@ -59,13 +59,14 @@ def test_post_valid(data: dict, exp_status: int) -> None:
     assert response_direct.headers.keys() == response_gateway.headers.keys()
 
 
-def test_docs() -> None:
+@pytest.mark.parametrize("path", ["docs", "redoc"])
+def test_docs(path: str) -> None:
     response_direct = httpx.get(
-        f"http://localhost:{PORT_API}/docs",
+        f"http://localhost:{PORT_API}/{path}",
         follow_redirects=True,
     )
     response_gateway = httpx.get(
-        f"http://localhost:{PORT_GATEWAY}/docs",
+        f"http://localhost:{PORT_GATEWAY}/{path}",
         follow_redirects=True,
     )
     content_direct = response_direct.content.decode("utf-8")
