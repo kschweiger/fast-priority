@@ -1,0 +1,140 @@
+name: Deployment
+on:
+  push:
+    tags: ["*"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Universal Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12"]
+    outputs:
+      version: ${{ steps.package-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure uv
+        uses: astral-sh/setup-uv@v5
+        # with:
+        #   version: "0.1.6"
+
+      - name: Install Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Build package
+        run: |
+          uv build
+      - name: Extract package version
+        id: package-version
+        run: |
+          uv run python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])" > VERSION
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.python }}
+          path: dist/
+
+  publish-testpypi:
+    name: TestPyPI Publication
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+
+    steps:
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+      - name: Publish
+        run: |
+          ls -l
+          ls -l dist/
+          uv publish -v --publish-url https://test.pypi.org/legacy/ dist/*
+
+  verify-installation:
+    name: Cross-Platform Validation
+    needs:
+      - build
+      - publish-testpypi
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - "ubuntu-latest"
+          # - "ubuntu-22.04-arm64"
+        python-version:
+          - "3.12"
+          # - "3.13"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Waiting 10 seconds
+        run : sleep 10
+      - name: Install package from test-pypi
+        run: |
+          uv pip install -v --no-cache \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            --index-strategy unsafe-first-match \
+            fast-priority==$VERSION
+        env:
+          VERSION:  ${{needs.build.outputs.version}}
+      - name: Run API and Worker script
+        run : |
+          set +e
+          FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8001" timeout 5 uv run -v run-fast-priority
+          rc=$?
+          if [ $rc -eq 124 ]; then
+            echo "API command timed out; ignoring timeout failure."
+          elif [ $rc -ne 0 ]; then
+            echo "API command failed with error code $rc."
+            exit $rc
+          fi
+          FAST_PRIORITY_WORKERS=1 timeout 5 uv run -v run-fast-priority
+          rc=$?
+          if [ $rc -eq 124 ]; then
+            echo "Worker command timed out; ignoring timeout failure."
+          elif [ $rc -ne 0 ]; then
+            echo "Worker command failed with error code $rc."
+            exit $rc
+          fi
+
+  publish-pypi:
+    name: PyPI Publication
+    needs: verify-installation
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+    steps:
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+      - name: Publish
+        run: |
+          ls -l
+          ls -l dist/
+          uv publish -v dist/*
+
