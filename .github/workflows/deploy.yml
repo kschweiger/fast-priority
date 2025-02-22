@@ -6,31 +6,38 @@ on: [push]
 #   workflow_dispatch:
 
 jobs:
-  # build:
-  #   name: Universal Build
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       python: ["3.12"]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #
-  #     - name: Configure uv
-  #       uses: astral-sh/setup-uv@v5
-  #       # with:
-  #       #   version: "0.1.6"
-  #
-  #     - name: Install Python ${{ matrix.python }}
-  #       run: uv python install ${{ matrix.python }}
-  #
-  #     - name: Build package
-  #       run: |
-  #         uv build
-  #     - uses: actions/upload-artifact@v4
-  #       with:
-  #         name: dist-${{ matrix.python }}
-  #         path: dist/
-  #
+  build:
+    name: Universal Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12"]
+    outputs:
+      version: ${{ steps.package-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure uv
+        uses: astral-sh/setup-uv@v5
+        # with:
+        #   version: "0.1.6"
+
+      - name: Install Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Build package
+        run: |
+          uv build
+      - name: Extract package version
+        id: package-version
+        run: |
+          python -c "import tomli; print(tomli.load(open('pyproject.toml', 'rb'))['project']['version'])" > VERSION
+          echo "version=$(cat VERSION)" >> $GITHUB_OUTPUT
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.python }}
+          path: dist/
+
   # publish-testpypi:
   #   name: TestPyPI Publication
   #   needs: build
@@ -70,9 +77,11 @@ jobs:
           # - "ubuntu-22.04-arm64"
         python-version:
           - "3.12"
-          - "3.13"
+          # - "3.13"
     runs-on: ${{ matrix.os }}
     steps:
+      - env:
+          VERSION:  ${{needs.build.outputs.version}}
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
         with:
@@ -83,6 +92,15 @@ jobs:
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             fast-priority
+      - name: Verify installed version
+        run: |
+          INSTALLED_VERSION=$(uv pip list | grep fast-priority | awk '{print $2}')
+          echo "Expected version: $VERSION"
+          echo "Installed version: $INSTALLED_VERSION"
+          if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
+            echo "Version mismatch detected!"
+            exit 1
+          fi
       - name: Run API and Worker script
         run : |
           set +e
