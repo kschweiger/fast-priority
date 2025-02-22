@@ -66,6 +66,7 @@ jobs:
         python-version:
           - "3.12"
           - "3.13"
+    runs-on: ${{ matrix.os }}
     fail-fast: false
     steps:
       - name: Configure uv
