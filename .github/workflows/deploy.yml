@@ -1,0 +1,106 @@
+name: Deployment
+
+# on:
+#   push:
+#     tags: ["*"]
+#   workflow_dispatch:
+
+jobs:
+  build:
+    name: Universal Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.12","3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure uv
+        uses: astral-sh/setup-uv@v5
+        # with:
+        #   version: "0.1.6"
+
+      - name: Install Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Build package
+        run: |
+          uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.python }}
+          path: dist/
+
+  publish-testpypi:
+    name: TestPyPI Publication
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+
+    steps:
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+      - name: Publish
+        run: |
+          ls -l
+          ls -l dist/
+          uv publish -v dist/*
+
+  verify-installation:
+    name: Cross-Platform Validation
+    needs: publish-testpypi
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, ubuntu-22.04-arm64]
+        python: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install Python ${{ matrix.python }}
+        run: uv python install ${{ matrix.python }}
+
+      - name: Test installation
+        run: |
+          uv pip install \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            fast-priority
+          FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8001" timeout 5 uv run run-fast-priority
+          FAST_PRIORITY_WORKERS=1 timeout 5 uv run run-fast-priority
+
+  # publish-pypi:
+  #   name: Production Release
+  #   needs: verify-installation
+  #   if: github.event_name == 'push' && contains(github.ref, 'tags')
+  #   runs-on: ubuntu-latest
+  #   environment: pypi
+  #   permissions:
+  #     id-token: write
+  #
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         pattern: dist-*
+  #         path: merged-dist
+  #
+  #     - name: Prepare final artifacts
+  #       run: |
+  #         mkdir -p dist
+  #         find merged-dist -name '*.whl' -exec cp {} dist/ \;
+  #         find merged-dist -name '*.tar.gz' -exec cp {} dist/ \;
+  #
+  #     - uses: pypa/gh-action-pypi-publish@release/v1
+  #       with:
+  #         packages-dir: dist
