@@ -91,18 +91,20 @@ jobs:
           uv pip install \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
-            fast-priority
-      - name: Verify installed version
-        run: |
-          INSTALLED_VERSION=$(uv pip list | grep fast-priority | awk '{print $2}')
-          echo "Expected version: $VERSION"
-          echo "Installed version: $INSTALLED_VERSION"
-          if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
-            echo "Version mismatch detected!"
-            exit 1
-          fi
+            fast-priority==$VERSION
         env:
           VERSION:  ${{needs.build.outputs.version}}
+      # - name: Verify installed version
+      #   run: |
+      #     INSTALLED_VERSION=$(uv pip list | grep fast-priority | awk '{print $2}')
+      #     echo "Expected version: $VERSION"
+      #     echo "Installed version: $INSTALLED_VERSION"
+      #     if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
+      #       echo "Version mismatch detected!"
+      #       exit 1
+      #     fi
+      #   env:
+      #     VERSION:  ${{needs.build.outputs.version}}
 
       - name: Run API and Worker script
         run : |
