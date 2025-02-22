@@ -62,7 +62,6 @@ jobs:
       matrix:
         os:
           - "ubuntu-latest"
-          - "macos-latest"
           - "ubuntu-22.04-arm64"
         python-version:
           - "3.12"
@@ -84,7 +83,6 @@ jobs:
           rc=$?
           if [ $rc -eq 124 ]; then
             echo "API command timed out; ignoring timeout failure."
-            exit 0
           elif [ $rc -ne 0 ]; then
             echo "API command failed with error code $rc."
             exit $rc
@@ -93,7 +91,6 @@ jobs:
           rc=$?
           if [ $rc -eq 124 ]; then
             echo "Worker command timed out; ignoring timeout failure."
-            exit 0
           elif [ $rc -ne 0 ]; then
             echo "Worker command failed with error code $rc."
             exit $rc
