@@ -1,5 +1,5 @@
 name: Deployment
-
+on: [push]
 # on:
 #   push:
 #     tags: ["*"]
