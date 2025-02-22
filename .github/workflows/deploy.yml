@@ -86,6 +86,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Waiting 10 seconds
+        run : sleep 10
       - name: Install package from test-pypi
         run: |
           uv pip install -v --no-cache \
