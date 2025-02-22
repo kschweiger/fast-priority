@@ -59,16 +59,20 @@ jobs:
     needs: publish-testpypi
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, ubuntu-22.04-arm64]
-        python: ["3.12", "3.13"]
-    runs-on: ${{ matrix.os }}
-
+        os:
+          - "ubuntu-latest"
+          - "macos-latest"
+          - "ubuntu-22.04-arm64"
+        python-version:
+          - "3.12"
+          - "3.13"
+    fail-fast: false
     steps:
       - name: Configure uv
+      - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
-      - name: Install Python ${{ matrix.python }}
-        run: uv python install ${{ matrix.python }}
-
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Test installation
         run: |
           uv pip install \
