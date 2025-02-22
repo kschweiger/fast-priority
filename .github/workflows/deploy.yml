@@ -95,18 +95,6 @@ jobs:
             fast-priority==$VERSION
         env:
           VERSION:  ${{needs.build.outputs.version}}
-      # - name: Verify installed version
-      #   run: |
-      #     INSTALLED_VERSION=$(uv pip list | grep fast-priority | awk '{print $2}')
-      #     echo "Expected version: $VERSION"
-      #     echo "Installed version: $INSTALLED_VERSION"
-      #     if [ "$INSTALLED_VERSION" != "$VERSION" ]; then
-      #       echo "Version mismatch detected!"
-      #       exit 1
-      #     fi
-      #   env:
-      #     VERSION:  ${{needs.build.outputs.version}}
-
       - name: Run API and Worker script
         run : |
           set +e
@@ -127,27 +115,25 @@ jobs:
             exit $rc
           fi
 
-  # publish-pypi:
-  #   name: Production Release
-  #   needs: verify-installation
-  #   if: github.event_name == 'push' && contains(github.ref, 'tags')
-  #   runs-on: ubuntu-latest
-  #   environment: pypi
-  #   permissions:
-  #     id-token: write
-  #
-  #   steps:
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         pattern: dist-*
-  #         path: merged-dist
-  #
-  #     - name: Prepare final artifacts
-  #       run: |
-  #         mkdir -p dist
-  #         find merged-dist -name '*.whl' -exec cp {} dist/ \;
-  #         find merged-dist -name '*.tar.gz' -exec cp {} dist/ \;
-  #
-  #     - uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         packages-dir: dist
+  publish-pypi:
+    name: PyPI Publication
+    needs: verify-installation
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+    steps:
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+      - name: Publish
+        run: |
+          ls -l
+          ls -l dist/
+          uv publish -v dist/*
+
