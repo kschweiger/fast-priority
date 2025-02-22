@@ -52,7 +52,7 @@ jobs:
         run: |
           ls -l
           ls -l dist/
-          uv publish -v --index-url https://test.pypi.org/simple/ dist/*
+          uv publish -v --publish-url https://test.pypi.org/legacy/ dist/*
 
   verify-installation:
     name: Cross-Platform Validation
