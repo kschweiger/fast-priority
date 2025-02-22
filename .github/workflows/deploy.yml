@@ -64,6 +64,7 @@ jobs:
   verify-installation:
     name: Cross-Platform Validation
     # needs: publish-testpypi
+    needs: build
     services:
       redis:
         image: redis:7
@@ -80,8 +81,6 @@ jobs:
           # - "3.13"
     runs-on: ${{ matrix.os }}
     steps:
-      - env:
-          VERSION:  ${{needs.build.outputs.version}}
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
         with:
@@ -101,6 +100,9 @@ jobs:
             echo "Version mismatch detected!"
             exit 1
           fi
+        env:
+          VERSION:  ${{needs.build.outputs.version}}
+
       - name: Run API and Worker script
         run : |
           set +e
