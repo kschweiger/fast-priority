@@ -4,7 +4,21 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "fast_priority"
+authors = [
+  { name = "Korbinian Schweiger", email = "korbinian.schweiger@gmail.com" },
+]
+license = { file = "LICENSE" }
 version = "0.0.1"
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Framework :: FastAPI",
+  "Intended Audience :: System Administrators",
+  "Topic :: Internet",
+]
+keywords = ["queue", "fastapi", "priority", "redis"]
 description = "Simple and streigt forward priority queing gateway using fastapi"
 readme = "README.md"
 requires-python = ">=3.12"
