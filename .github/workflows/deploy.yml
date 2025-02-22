@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ["3.12","3.13"]
+        python: ["3.12"]
     steps:
       - uses: actions/checkout@v4
 
@@ -52,7 +52,7 @@ jobs:
         run: |
           ls -l
           ls -l dist/
-          uv publish -v dist/*
+          uv publish -v --index-url https://test.pypi.org/simple/ dist/*
 
   verify-installation:
     name: Cross-Platform Validation
