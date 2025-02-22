@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.scripts]
-run-fast-priority-queue = "fast_priority.cli:main"
+run-fast-priority = "fast_priority.cli:main"
 
 [tool.uv]
 default-groups = ["dev", "test"]

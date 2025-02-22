@@ -44,9 +44,9 @@ Both the gateway and workers are fully configurable via the following environmen
 
 ## Usage
 
-Fast Priority Queue is designed to run via Docker (or Docker Compose), but you can also run the components individually during development.
+Fast Priority Queue is designed to run via Docker (or Docker Compose) or using the script installed with the package `run-fast-priority`. The configuration works the same for both approaches using the environment variables described in [Configuration section](#configuration). The script is mainly provide to give the user the flexibility to include the gateway in their own docker containers by installing the package via pypi.
 
-For example:
+For development (or more specialized application) the gateway can also be run using the underlying command like this:
 
 ```bash
 fastapi run fast_priority/app.py --host 0.0.0.0 --port 8001
@@ -60,10 +60,10 @@ You can build the Docker container using the provided Dockerfile. The container 
 - If `FAST_PRIORITY_WORKER` is set, the container starts the worker(s).
 - If not, the gateway is started.
 
+The same strategy can be used with you own container and installing the package in the Dockerfile from pypi.
 
 
 #### Examples
-
 
 ```bash
 # API

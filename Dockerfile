@@ -8,4 +8,4 @@ ADD . /app
 WORKDIR /app
 RUN uv sync --frozen --no-dev --no-group test
 
-CMD ["uv", "run", "--no-dev", "--no-group", "test", "run-fast-priority-queue"]
+CMD ["uv", "run", "--no-dev", "--no-group", "test", "run-fast-priority"]
