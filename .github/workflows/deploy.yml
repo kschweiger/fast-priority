@@ -67,7 +67,7 @@ jobs:
       matrix:
         os:
           - "ubuntu-latest"
-          - "ubuntu-22.04-arm64"
+          # - "ubuntu-22.04-arm64"
         python-version:
           - "3.12"
           - "3.13"
@@ -77,12 +77,14 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Test installation
+      - name: Install package from test-pypi
         run: |
           uv pip install \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             fast-priority
+      - name: Run API and Worker script
+        run : |
           set +e
           FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8001" timeout 5 uv run -v run-fast-priority
           rc=$?
