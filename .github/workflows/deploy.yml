@@ -60,7 +60,7 @@ jobs:
           ls -l
           ls -l dist/
           cd dist/
-          find .  -maxdepth 1 -type f -exec sh -c 'for f; do mv "$f" "$(cat /proc/sys/kernel/random/uuid)_$(basename "$f")"; done' sh {} +
+          find . -maxdepth 1 -type f -name 'fast_priority-*' -exec sh -c 'for f; do uuid=$(cat /proc/sys/kernel/random/uuid); base=$(basename "$f"); newname="fast_priority-${uuid}-${base#fast_priority-}"; echo "Renaming $f to $newname"; mv "$f" "$newname"; done' sh {} +
           cd ..
           uv publish -v --publish-url https://test.pypi.org/legacy/ dist/*
 
