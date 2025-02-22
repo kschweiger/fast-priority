@@ -63,7 +63,9 @@ jobs:
 
   verify-installation:
     name: Cross-Platform Validation
-    needs: publish-testpypi
+    needs:
+      - build
+      - publish-testpypi
     services:
       redis:
         image: redis:7
