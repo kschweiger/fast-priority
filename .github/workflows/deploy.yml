@@ -69,7 +69,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     fail-fast: false
     steps:
-      - name: Configure uv
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
         with:
