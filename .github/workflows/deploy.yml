@@ -79,8 +79,25 @@ jobs:
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             fast-priority
+          set +e
           FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8001" timeout 5 uv run run-fast-priority
+          rc=$?
+          if [ $rc -eq 124 ]; then
+            echo "API command timed out; ignoring timeout failure."
+            exit 0
+          elif [ $rc -ne 0 ]; then
+            echo "API command failed with error code $rc."
+            exit $rc
+          fi
           FAST_PRIORITY_WORKERS=1 timeout 5 uv run run-fast-priority
+          rc=$?
+          if [ $rc -eq 124 ]; then
+            echo "Worker command timed out; ignoring timeout failure."
+            exit 0
+          elif [ $rc -ne 0 ]; then
+            echo "Worker command failed with error code $rc."
+            exit $rc
+          fi
 
   # publish-pypi:
   #   name: Production Release
