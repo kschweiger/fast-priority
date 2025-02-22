@@ -1,36 +1,36 @@
-# name: Integration Tests
-# on: [push, pull_request]
-#
-# jobs:
-#   integration-tests:
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         python-version:
-#           - "3.12"
-#     services:
-#       redis:
-#         image: redis:7
-#         ports:
-#           - 6379:6379
-#
-#     steps:
-#       - uses: actions/checkout@v4
-#       - name: Install uv and set the python version
-#         uses: astral-sh/setup-uv@v5
-#         with:
-#           python-version: ${{ matrix.python-version }}
-#       - name: Install the project
-#         run: uv sync --all-extras
-#       - name: Start Gateway
-#         run: |
-#           export FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8010"
-#           export FAST_PRIORITY_LOW_PRIO_PATHS="endpoint_2/"
-#           export FAST_PRIORITY_LOW_PRIO_BASE_PATHS="sub_category/"
-#           uv run fastapi run fast_priority/app.py --host 0.0.0.0 --port 8001 &
-#       - name: Start API
-#         run: uv run fastapi run examples/end2end/app.py --host 0.0.0.0 --port 8010 &
-#       - name: Start worker
-#         run: uv run rq worker high low &
-#       - name : Run integration tests
-#         run: uv run pytest  tests/integration/
+name: Integration Tests
+on: [push, pull_request]
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.12"
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install the project
+        run: uv sync --all-extras
+      - name: Start Gateway
+        run: |
+          export FAST_PRIORITY_TARGET_BASE_URL="http://localhost:8010"
+          export FAST_PRIORITY_LOW_PRIO_PATHS="endpoint_2/"
+          export FAST_PRIORITY_LOW_PRIO_BASE_PATHS="sub_category/"
+          uv run fastapi run fast_priority/app.py --host 0.0.0.0 --port 8001 &
+      - name: Start API
+        run: uv run fastapi run examples/end2end/app.py --host 0.0.0.0 --port 8010 &
+      - name: Start worker
+        run: uv run rq worker high low &
+      - name : Run integration tests
+        run: uv run pytest  tests/integration/

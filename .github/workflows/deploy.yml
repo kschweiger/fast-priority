@@ -1,9 +1,8 @@
 name: Deployment
-on: [push]
-# on:
-#   push:
-#     tags: ["*"]
-#   workflow_dispatch:
+on:
+  push:
+    tags: ["*"]
+  workflow_dispatch:
 
 jobs:
   build:
