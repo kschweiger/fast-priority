@@ -38,33 +38,32 @@ jobs:
           name: dist-${{ matrix.python }}
           path: dist/
 
-  # publish-testpypi:
-  #   name: TestPyPI Publication
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: release
-  #   permissions:
-  #     id-token: write
-  #
-  #   steps:
-  #     - name: "Install uv"
-  #       uses: astral-sh/setup-uv@v5
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: dist/
-  #         merge-multiple: true
-  #     - name: Publish
-  #       run: |
-  #         ls -l
-  #         ls -l dist/
-  #         uv publish -v --publish-url https://test.pypi.org/legacy/ dist/*
-  #
+  publish-testpypi:
+    name: TestPyPI Publication
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    permissions:
+      id-token: write
+
+    steps:
+      - name: "Install uv"
+        uses: astral-sh/setup-uv@v5
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          merge-multiple: true
+      - name: Publish
+        run: |
+          ls -l
+          ls -l dist/
+          uv publish -v --publish-url https://test.pypi.org/legacy/ dist/*
+
   verify-installation:
     name: Cross-Platform Validation
-    # needs: publish-testpypi
-    needs: build
+    needs: publish-testpypi
     services:
       redis:
         image: redis:7
@@ -114,7 +113,7 @@ jobs:
             echo "API command failed with error code $rc."
             exit $rc
           fi
-          FAST_PRIORITY_WORKERS=1 timeout 10 uv run -v run-fast-priority
+          FAST_PRIORITY_WORKERS=1 timeout 5 uv run -v run-fast-priority
           rc=$?
           if [ $rc -eq 124 ]; then
             echo "Worker command timed out; ignoring timeout failure."
