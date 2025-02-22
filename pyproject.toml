@@ -48,7 +48,8 @@ dev = [
   "ruff",
   "pre-commit",
   "bpython",
-  "debugpy"
+  "debugpy",
+  "flit>=3.11.0",
 ]
 
 [tool.pytest.ini_options]
