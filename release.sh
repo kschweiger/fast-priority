@@ -17,7 +17,7 @@ echo $VERSION
 git-changelog --bump ${VERSION}
 
 git add pyproject.toml CHANGELOG.md
-git commit -m "build: Bumping ${OLD_VERSION} -> ${VERSION} 🔖"
+git commit -n -m "build: Bumping ${OLD_VERSION} -> ${VERSION} 🔖"
 
 git tag ${VERSION}
 
