@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [0.0.23](https://github.com/kschweiger/fast-priority/releases/tag/0.0.23) - 2025-02-24
+
+<small>[Compare with 0.0.22](https://github.com/kschweiger/fast-priority/compare/0.0.22...0.0.23)</small>
+
+### Continuous Integration
+
+- Update Github release step ([623f319](https://github.com/kschweiger/fast-priority/commit/623f31919da5b63731f991d2b047555814789ad3) by Korbinian Schweiger).
+
 ## [0.0.22](https://github.com/kschweiger/fast-priority/releases/tag/0.0.22) - 2025-02-24
 
 <small>[Compare with first commit](https://github.com/kschweiger/fast-priority/compare/9e8b6a8e1f401d26868188f0307e27c8e642af2f...0.0.22)</small>
