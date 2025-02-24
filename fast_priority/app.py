@@ -208,7 +208,11 @@ async def forward_request(request: Request, path: str) -> Response:
     return job.result
 
 
-@app.api_route("/{path:path}", methods=["GET", "POST"], include_in_schema=False)
+@app.api_route(
+    "/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH", "TRACE"],
+    include_in_schema=False,
+)
 async def proxy_request(request: Request, path: str) -> Any:
     response = await forward_request(request, path)
     print(response)

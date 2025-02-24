@@ -84,6 +84,7 @@ jobs:
       - name: Install uv and set the python version
         uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: false
           python-version: ${{ matrix.python-version }}
       - name: Waiting 10 seconds
         run : sleep 10
