@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.0.0](https://github.com/kschweiger/fast-priority/releases/tag/1.0.0) - 2025-02-24
+
+<small>[Compare with 0.0.23](https://github.com/kschweiger/fast-priority/compare/0.0.23...1.0.0)</small>
+
+### Bug Fixes
+
+- Add other HTTP methods to pass through route ([5ac372c](https://github.com/kschweiger/fast-priority/commit/5ac372ca0308ccd9c51ecafc4e7948a7a85da3cb) by Korbinian Schweiger).
+
 ## [0.0.23](https://github.com/kschweiger/fast-priority/releases/tag/0.0.23) - 2025-02-24
 
 <small>[Compare with 0.0.22](https://github.com/kschweiger/fast-priority/compare/0.0.22...0.0.23)</small>
