@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [0.0.22](https://github.com/kschweiger/fast-priority/releases/tag/0.0.22) - 2025-02-24
 
-<small>[Compare with latest](https://github.com/kschweiger/fast-priority/compare/9e8b6a8e1f401d26868188f0307e27c8e642af2f...HEAD)</small>
+<small>[Compare with first commit](https://github.com/kschweiger/fast-priority/compare/9e8b6a8e1f401d26868188f0307e27c8e642af2f...0.0.22)</small>
 
 ### Features
 
@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Continuous Integration
 
+- Add github release step ([d951a77](https://github.com/kschweiger/fast-priority/commit/d951a774a835e9b471b60e57d4bd38cb0afeba3e) by Korbinian Schweiger).
 - Add PyPi Deployment workflow (#7) ([2c1d7c2](https://github.com/kschweiger/fast-priority/commit/2c1d7c28cff6dbdc83dc280b1843c74ec082d277) by Korbinian Schweiger).
 - Add github action for unit tests ([8d34811](https://github.com/kschweiger/fast-priority/commit/8d34811c18ed9e9c4467cda559f68bddba11727d) by Korbinian Schweiger).
 
-<!-- insertion marker -->
