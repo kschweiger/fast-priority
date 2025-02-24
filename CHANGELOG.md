@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Docs
 
+- Add changelog ([b7078a7](https://github.com/kschweiger/fast-priority/commit/b7078a727f7f1804a867c26d772c8cdfc370e09c) by Korbinian Schweiger).
 - Fix typo in README ([8e4382b](https://github.com/kschweiger/fast-priority/commit/8e4382be2e25303c1301d8af37a8c52a11376068) by Korbinian Schweiger).
 - Update README ([f67a5b6](https://github.com/kschweiger/fast-priority/commit/f67a5b6ace38879767ae5654e1d46122ca6a4ba0) by Korbinian Schweiger).
 

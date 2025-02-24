@@ -91,3 +91,10 @@ ignore = [
   "RUF009",
   "E731",
 ]
+
+[tool.git-changelog]
+convention = "angular"
+output = "CHANGELOG.md"
+provider = "github"
+sections = "feat,fix,revert,refactor,perf,doc,ci"
+template = "keepachangelog"
