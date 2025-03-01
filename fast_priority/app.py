@@ -43,7 +43,7 @@ job_poll_interval = float(os.environ.get("FAST_PRIORITY_POLL_INTERVAL", 1.0))
 job_ttl = int(os.environ.get("FAST_PRIORITY_TTL", 60 * 5))
 
 doc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_docs")
-redoc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_redoc")
+redoc_path = os.environ.get("FAST_PRIORITY_REDOC_PATH", "/gateway_redoc")
 health_path = os.environ.get("FAST_PRIORITY_HEALTH_PATH", "/gateway_health")
 
 prio_paths = None
@@ -131,7 +131,6 @@ async def heath_check() -> Any:
 @app.get("/redoc", include_in_schema=False)
 async def get_target_docs(request: Request) -> Any:
     current_path = request.url.path
-    print(current_path)
     async with httpx.AsyncClient(timeout=None, follow_redirects=True) as client:
         response = await client.get(  # type: ignore
             url=f"{target_base_url}{current_path}",
@@ -215,7 +214,6 @@ async def forward_request(request: Request, path: str) -> Response:
 )
 async def proxy_request(request: Request, path: str) -> Any:
     response = await forward_request(request, path)
-    print(response)
     return Response(
         content=response.content,
         status_code=response.status_code,

@@ -9,6 +9,7 @@ It is designed to sit between your clients and a backend REST API, managing two 
 - Intercepts incoming client requests and forwards them to a target REST API.
 - Enqueues requests into either a high-priority or low-priority queue based on configurable path matching.
 - Processes queued requests via worker processes running in a separate environment.
+- Pass through to `/docs` and `/redoc` endpoints with `openapi.json` definitions of target REST API
 - Offers Dockerized deployment for both the gateway and worker processes.
 
 
@@ -18,19 +19,22 @@ Both the gateway and workers are fully configurable via the following environmen
 
 ### Gateway
 
-| ENV                                       | Description                                                                                                                                | Required | Default   |
-|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------|
-| FAST_PRIORITY_TARGET_BASE_URL       | Base url of the target REST api which should run behind the gateway                                                                        | x        |           |
-| FAST_PRIORITY_HIGH_PRIO_PATHS       | Switch between **listed** and **unlisted** modes. If **listed** (**unlisted**) the paths defined in the _PATH_ env variables are put on the **high** (**low**) queue |          | unlisted  |
-| FAST_PRIORITY_PRIO_PATHS            | Comma separated list of paths on the target API that should have low priority. Low priority for exact matches                              |          | None      |
-| FAST_PRIORITY_PRIO_BASE_PATHS       | Comma separated list of paths on the target API that should have low priority. Low priority if a request paths starts with the value.      |          | None      |
-| FAST_PRIORITY_PASS_THROUGH          | Comma separated list of paths on the target API that should skip the queue. Request will be directly be passed on.                         |          | health/   |
-| FAST_PRIORITY_POLL_INTERVAL         | How often should each request check if the job is finished                                                                                 |          | 1.0       |
-| FAST_PRIORITY_TTL                   | Time-to-live (in seconds) for jobs on the queues.	                                                                                         |          | 300       |
-| FAST_PRIORITY_REDIS_HOST            | Redis host                                                                                                                                 |          | localhost |
-| FAST_PRIORITY_REDIS_PORT            | Redis port                                                                                                                                 |          | 6379      |
-| FAST_PRIORITY_REDIS_USER            | Redis username                                                                                                                             |          | None      |
-| FAST_PRIORITY_REDIS_PASSWORD        | Redis password                                                                                                                             |          | None      |
+| ENV                                 | Description                                                                                                                                | Required | Default         |
+|-------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|----------|-----------------|
+| FAST_PRIORITY_TARGET_BASE_URL       | Base url of the target REST api which should run behind the gateway                                                                        | x        |                 |
+| FAST_PRIORITY_HIGH_PRIO_PATHS       | Switch between **listed** and **unlisted** modes. If **listed** (**unlisted**) the paths defined in the _PATH_ env variables are put on the **high** (**low**) queue |          | unlisted        |
+| FAST_PRIORITY_PRIO_PATHS            | Comma separated list of paths on the target API that should have low priority. Low priority for exact matches                              |          | None            |
+| FAST_PRIORITY_PRIO_BASE_PATHS       | Comma separated list of paths on the target API that should have low priority. Low priority if a request paths starts with the value.      |          | None            |
+| FAST_PRIORITY_PASS_THROUGH          | Comma separated list of paths on the target API that should skip the queue. Request will be directly be passed on.                         |          | health/         |
+| FAST_PRIORITY_POLL_INTERVAL         | How often should each request check if the job is finished                                                                                 |          | 1.0             |
+| FAST_PRIORITY_TTL                   | Time-to-live (in seconds) for jobs on the queues.	                                                                                         |          | 300             |
+| FAST_PRIORITY_REDIS_HOST            | Redis host                                                                                                                                 |          | localhost       |
+| FAST_PRIORITY_REDIS_PORT            | Redis port                                                                                                                                 |          | 6379            |
+| FAST_PRIORITY_REDIS_USER            | Redis username                                                                                                                             |          | None            |
+| FAST_PRIORITY_REDIS_PASSWORD        | Redis password                                                                                                                             |          | None            |
+| FAST_PRIORITY_DOC_PATH              | Endpoint for the openapi /docs enpoint of the gateway                                                                                      |          | /gateway_docs   |
+| FAST_PRIORITY_REDOC_PATH            | Endpoint for the openapi /redoc enpoint of the gateway                                                                                     |          | /gateway_redoc  |
+| FAST_PRIORITY_HEALTH_PATH           | Endpoint for the healts check of the gateway                                                                                               |          | /gateway_health |
 
 ### Queue worker (docker)
 

@@ -272,7 +272,7 @@ wheels = [
 
 [[package]]
 name = "fast-priority"
-version = "0.0.23"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
