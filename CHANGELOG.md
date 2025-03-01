@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.0.1](https://github.com/kschweiger/fast-priority/releases/tag/1.0.1) - 2025-03-01
+
+<small>[Compare with 1.0.0](https://github.com/kschweiger/fast-priority/compare/1.0.0...1.0.1)</small>
+
+### Bug Fixes
+
+- Gateway redoc env var ([3b135a9](https://github.com/kschweiger/fast-priority/commit/3b135a99232405e30ba19ca0114d851ca5cf8c98) by Korbinian Schweiger).
+
 ## [1.0.0](https://github.com/kschweiger/fast-priority/releases/tag/1.0.0) - 2025-02-24
 
 <small>[Compare with 0.0.23](https://github.com/kschweiger/fast-priority/compare/0.0.23...1.0.0)</small>
