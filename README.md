@@ -35,6 +35,7 @@ Both the gateway and workers are fully configurable via the following environmen
 | FAST_PRIORITY_DOC_PATH              | Endpoint for the openapi /docs enpoint of the gateway                                                                                      |          | /gateway_docs   |
 | FAST_PRIORITY_REDOC_PATH            | Endpoint for the openapi /redoc enpoint of the gateway                                                                                     |          | /gateway_redoc  |
 | FAST_PRIORITY_HEALTH_PATH           | Endpoint for the healts check of the gateway                                                                                               |          | /gateway_health |
+| FAST_PRIORITY_NORMALIZE_PATHS       | Set wheather paths defined in should be normalized regaring trailign /. Applyies to FAST_PRIORITY_PRIO_PATH and FAST_PRIORITY_PASS_THROUGH |          | 1               |
 
 ### Queue worker (docker)
 

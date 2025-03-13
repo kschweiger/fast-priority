@@ -13,7 +13,7 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 from rq import Queue
 from rq.job import JobStatus
 
-from fast_priority.utils import generate_enpoint_list, run_request
+from fast_priority.utils import generate_enpoint_list, normalize_paths, run_request
 
 load_dotenv()
 
@@ -45,6 +45,7 @@ job_ttl = int(os.environ.get("FAST_PRIORITY_TTL", 60 * 5))
 doc_path = os.environ.get("FAST_PRIORITY_DOC_PATH", "/gateway_docs")
 redoc_path = os.environ.get("FAST_PRIORITY_REDOC_PATH", "/gateway_redoc")
 health_path = os.environ.get("FAST_PRIORITY_HEALTH_PATH", "/gateway_health")
+normalize_urls = bool(os.environ.get("FAST_PRIORITY_NORMALIZE_PATHS", 1))
 
 prio_paths = None
 prio_base_paths = None
@@ -67,6 +68,10 @@ async def lifespan(app: FastAPI):
         os.environ.get("FAST_PRIORITY_PRIO_BASE_PATHS", None)
     )
 
+    if normalize_urls:
+        logger.info("Path normalization enabled")
+        pass_through_paths = normalize_paths(pass_through_paths)
+        prio_paths = normalize_paths(prio_paths)
     if not prio_base_paths and not prio_paths:
         logger.warning("No low priority endpoints defined.")
     else:

@@ -1,0 +1,6 @@
+GET http://localhost:8001/health/
+
+####
+
+
+GET "http://localhost:8001/endpoint_1?param_1=1&param_2=abce"
