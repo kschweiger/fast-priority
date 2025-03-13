@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.1.0](https://github.com/kschweiger/fast-priority/releases/tag/1.1.0) - 2025-03-13
+
+<small>[Compare with 1.0.1](https://github.com/kschweiger/fast-priority/compare/1.0.1...1.1.0)</small>
+
+### Features
+
+- Add option to normalize paths used for exact prio and pass through ([1270ff2](https://github.com/kschweiger/fast-priority/commit/1270ff2ad60df88e8246beda875492297e568de2) by Korbinian Schweiger).
+
 ## [1.0.1](https://github.com/kschweiger/fast-priority/releases/tag/1.0.1) - 2025-03-01
 
 <small>[Compare with 1.0.0](https://github.com/kschweiger/fast-priority/compare/1.0.0...1.0.1)</small>
