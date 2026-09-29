@@ -21,14 +21,14 @@ classifiers = [
 keywords = ["queue", "fastapi", "priority", "redis"]
 description = "Simple and streigt forward priority queing gateway using fastapi"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
   "fastapi[standard]>=0.115.8",
   "httpx",
   "python-dotenv>=1.0.1",
   "rq>=2.1.0",
   "click",
-  "uvicorn>=0.34.0"
+  "uvicorn>=0.34.0",
 ]
 
 [project.scripts]
@@ -38,19 +38,8 @@ run-fast-priority = "fast_priority.cli:main"
 default-groups = ["dev", "test"]
 
 [dependency-groups]
-test = [
-  "pytest",
-  "pytest-mock",
-  "pytest-cov"
-]
-dev = [
-  "uv",
-  "ruff",
-  "pre-commit",
-  "bpython",
-  "debugpy",
-  "flit>=3.11.0",
-]
+test = ["pytest", "pytest-mock", "pytest-cov"]
+dev = ["uv", "ruff", "pre-commit", "bpython", "debugpy", "flit>=3.11.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests/unit/"]
